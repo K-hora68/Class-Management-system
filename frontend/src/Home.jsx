@@ -6,9 +6,10 @@ function Home() {
     const navigate = useNavigate()
     return(
       <>
-        <h1> Hello world</h1>
-        <button onClick={navigate("/login")}> Get Started</button>
-        <button onClick={() => navigate("/login")} >Get Started</button>
+        <h1> 
+          Hello world. Enroll now as as student or a lecturer
+        </h1>
+        <button onClick={() => navigate("/signup")} >Get Started</button>
       </>
     )
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 
 function Signup(){
@@ -48,20 +48,25 @@ function Signup(){
        <input type="text" 
        placeholder="Username is your admission number" 
        value={username}
-       onchange = {(e) => setUsername(e.target.value)}
+       onChange = {(e) => setUsername(e.target.value)}
        
        />
        <input type="email"
         placeholder="Email" 
         value={email}
-        onchange = {(e) => setEmail(e.target.value)}
+        onChange = {(e) => setEmail(e.target.value)}
         />
        <input type="password"
+       placeholder="Password"
        value={password}
-       placeholder="Password" 
-       onchange = {(e) => setPassword(e.target.value)}
+       onChange = {(e) => setPassword(e.target.value)}
        />
        <button onClick={handleSubmit}>Sign Up</button> 
+       <h1>
+            Already have an account?
+            <Link to="/login"> Login</Link>
+       </h1>
+
      </div>
     </>
   )
