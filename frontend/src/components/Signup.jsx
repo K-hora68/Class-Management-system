@@ -1,74 +1,65 @@
-import React from 'react'
-import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { apiRequest, getApiErrorMessage } from "../api.js";
 
+function Signup() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-function Signup(){
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const navigate = useNavigate()
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
 
-    const handleSubmit = async(e) =>{
-        e.preventDefault()
-        const url = 'http://localhost:5000/api/signup'
-       try{
-            const response = await fetch(url, {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify({username, email, password})
-                }
-                )
-                
-            const data =  await response.json()
-             if(data.success){
-                console.log('User registered successfully', response.json)
-                navigate('/login')
-                    setUsername('')
-                    setEmail('')
-                    setPassword('')
-             }else{
-                console.log('User registration failed')
-                alert('User registration failed')
-             }
-
-            }
-        catch(error){
-        console.log(error)
-       }
-            
-       
+    try {
+      await apiRequest("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({ username, email, password }),
+      });
+      navigate("/login", { replace: true, state: { notice: "Account created. Sign in to continue." } });
+    } catch (registrationError) {
+      setError(getApiErrorMessage(registrationError));
+    } finally {
+      setIsSubmitting(false);
     }
-  return(
+  }
 
-    <>
-     <div className="signup-container">
-       <input type="text" 
-       placeholder="Username is your admission number" 
-       value={username}
-       onChange = {(e) => setUsername(e.target.value)}
-       
-       />
-       <input type="email"
-        placeholder="Email" 
-        value={email}
-        onChange = {(e) => setEmail(e.target.value)}
-        />
-       <input type="password"
-       placeholder="Password"
-       value={password}
-       onChange = {(e) => setPassword(e.target.value)}
-       />
-       <button onClick={handleSubmit}>Sign Up</button> 
-       <h1>
-            Already have an account?
-            <Link to="/login"> Login</Link>
-       </h1>
-
-     </div>
-    </>
-  )
+  return (
+    <main className="auth-page">
+      <header className="public-header auth-header">
+        <Link className="brand" to="/" aria-label="Campus home"><span className="brand-mark">C</span><span>campus<span className="brand-period">.</span></span></Link>
+        <Link className="back-link" to="/">Back to campus <span aria-hidden="true">↗</span></Link>
+      </header>
+      <div className="auth-layout">
+        <section className="auth-aside signup-aside">
+          <p className="eyebrow"><span className="eyebrow-dot" /> A place to begin</p>
+          <h1>Find your<br /><em>place here.</em></h1>
+          <p>One student account brings your courses, deadlines, and class conversations into view.</p>
+          <div className="auth-aside-mark" aria-hidden="true">C<span>.</span></div>
+        </section>
+        <section className="auth-form-panel">
+          <p className="eyebrow">Student registration</p>
+          <h2>Create your account</h2>
+          <p className="form-intro">Use your admission number and campus email.</p>
+          {error && <p className="form-error" role="alert">{error}</p>}
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="signup-username">Admission number</label>
+            <input id="signup-username" name="username" type="text" autoComplete="username" placeholder="Your admission number" value={username} onChange={(event) => setUsername(event.target.value)} required />
+            <label htmlFor="signup-email">Email address</label>
+            <input id="signup-email" name="email" type="email" autoComplete="email" placeholder="you@campus.edu" value={email} onChange={(event) => setEmail(event.target.value)} required />
+            <label htmlFor="signup-password">Password</label>
+            <input id="signup-password" name="password" type="password" autoComplete="new-password" placeholder="Create a password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+            <button className="button button-primary auth-submit" type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating account..." : "Create account"}<span aria-hidden="true">↗</span></button>
+          </form>
+          <p className="auth-switch">Already registered? <Link to="/login">Sign in</Link></p>
+        </section>
+      </div>
+    </main>
+  );
 }
-export default Signup
+
+export default Signup;
